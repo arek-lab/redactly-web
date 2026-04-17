@@ -18,8 +18,16 @@ const inter = Inter({
   display: 'swap',
 })
 
+function resolveMetadataBase(): URL {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://redactly.app')
+  } catch {
+    return new URL('https://redactly.app')
+  }
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://redactly.app'),
+  metadataBase: resolveMetadataBase(),
   title: 'Redactly — Anonimizacja danych osobowych zgodnie z RODO',
   description:
     'Chroń dane osobowe przed wyciekiem do narzędzi AI i SaaS. Redactly anonimizuje tekst w przeglądarce i pliki PDF — lokalnie, bez wysyłania danych na zewnątrz.',
