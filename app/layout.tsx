@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Montserrat, Inter } from 'next/font/google'
 import '@/styles/globals.css'
 import { Navbar } from '@/components/landing/navbar'
+import { SessionBroadcast } from '@/components/SessionBroadcast'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -18,6 +19,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://redactly.app'),
   title: 'Redactly — Anonimizacja danych osobowych zgodnie z RODO',
   description:
     'Chroń dane osobowe przed wyciekiem do narzędzi AI i SaaS. Redactly anonimizuje tekst w przeglądarce i pliki PDF — lokalnie, bez wysyłania danych na zewnątrz.',
@@ -28,6 +30,7 @@ export const metadata: Metadata = {
       'Wtyczka Chrome + aplikacja PDF. Chroń dane osobowe w codziennej pracy z AI.',
     locale: 'pl_PL',
     type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
   },
 }
 
@@ -42,6 +45,7 @@ export default function RootLayout({
       className={`${montserrat.variable} ${inter.variable}`}
     >
       <body>
+        <SessionBroadcast />
         <Navbar />
         <main>{children}</main>
       </body>

@@ -154,7 +154,7 @@ function LoggedInInfo({
 export function PlanSidebar({ isLoggedIn, isPremium, pdfSub }: PlanSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const title = isLoggedIn ? 'Twój plan' : 'Porownanie planow'
+  const title = isLoggedIn ? 'Twój plan' : 'Porównanie planów'
 
   return (
     <div className="rounded-[12px] border border-border-soft bg-bg-white overflow-hidden">
@@ -162,6 +162,8 @@ export function PlanSidebar({ isLoggedIn, isPremium, pdfSub }: PlanSidebarProps)
       <button
         type="button"
         onClick={() => setMobileOpen((o) => !o)}
+        aria-expanded={mobileOpen}
+        aria-controls="plan-sidebar-content"
         className="lg:hidden w-full flex items-center justify-between px-5 py-4 text-sm font-medium text-text-primary"
       >
         <span>{title}</span>
@@ -184,6 +186,7 @@ export function PlanSidebar({ isLoggedIn, isPremium, pdfSub }: PlanSidebarProps)
 
       {/* Divider on mobile when open */}
       <div
+        id="plan-sidebar-content"
         className={cn(
           'px-5 pb-5',
           'lg:block lg:pt-5',

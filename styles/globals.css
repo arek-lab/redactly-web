@@ -112,3 +112,14 @@ small {
 .animate-progress-slide {
   animation: progress-slide 1.4s ease-in-out infinite;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-progress-slide {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
