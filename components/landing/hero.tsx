@@ -6,12 +6,12 @@ const pillTags = ['RODO', 'PESEL', 'IBAN', 'NLP', 'Shadow DOM']
 
 export function Hero() {
   return (
-    <section className="px-6 pt-20 pb-24 md:pt-28 md:pb-32">
+    <section className="px-6 pt-[5px] pb-24 md:pt-28 md:pb-32">
       <div className="mx-auto max-w-[920px]">
         <div className="max-w-[680px] space-y-7 animate-fade-up">
           <Eyebrow>Anonimizacja danych osobowych</Eyebrow>
 
-          <h1 className="font-display text-text-primary">
+          <h1 className="font-display text-text-primary text-[32px]! font-semibold! md:text-[48px]! md:font-bold! md:tracking-[0.01em]!">
             Używasz AI w pracy.
             <br />
             Dane osobowe nie powinny tam trafiać.
