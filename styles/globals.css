@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+
+@theme {
+  /* Colors */
+  --color-accent:         #7C3AED;
+  --color-accent-hover:   #6D28D9;
+
+  --color-bg-base:        #F6F6FA;
+  --color-bg-white:       #FFFFFF;
+  --color-bg-surface:     #ECEAF5;
+  --color-bg-surface-2:   #E4E1EF;
+
+  --color-border-soft:    #DDDAEA;
+  --color-border-mid:     #C9C5DE;
+  --color-border-input:   #D5D2E6;
+
+  --color-text-primary:   #14121F;
+  --color-text-secondary: #504E65;
+  --color-text-muted:     #837F9E;
+  --color-text-faint:     #A8A5BC;
+
+  --color-badge-found:    #BD114A;
+  --color-badge-ok:       #9FCB98;
+  --color-badge-error:    #666664;
+}
+
+/* Fonts reference CSS vars injected by next/font on <html> */
+@theme inline {
+  --font-display: var(--font-montserrat);
+  --font-body:    var(--font-inter);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography scale */
+h1 {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.008em;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+small {
+  font-size: 13px;
+}
+
+/* Focus ring — zero shadows except this */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+  border-radius: 4px;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
+
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+
+@keyframes progress-slide {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(280%); }
+}
+
+.animate-progress-slide {
+  animation: progress-slide 1.4s ease-in-out infinite;
+}
