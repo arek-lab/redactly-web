@@ -21,6 +21,24 @@ export function SessionBroadcast() {
       }
     })
 
+    const handleExtensionReady = async (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return
+      if (event.data?.type !== 'REDACTLY_EXTENSION_READY') return
+
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
+        window.postMessage({
+          type: 'REDACTLY_AUTH',
+          session: {
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+          },
+        }, window.location.origin)
+      }
+    }
+
+    window.addEventListener('message', handleExtensionReady)
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         window.postMessage({
@@ -33,7 +51,10 @@ export function SessionBroadcast() {
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      window.removeEventListener('message', handleExtensionReady)
+      subscription.unsubscribe()
+    }
   }, [])
 
   return null
