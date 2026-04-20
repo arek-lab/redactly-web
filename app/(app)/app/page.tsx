@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import { UploadZone } from '@/components/app/upload-zone'
 import { PlanSidebar } from '@/components/app/plan-sidebar'
+import { UploadZoneDynamic } from '@/components/app/upload-zone-dynamic'
 import type { Subscription } from '@/types/database'
 
 export default async function AppPage() {
@@ -41,7 +41,7 @@ export default async function AppPage() {
 
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         <div className="w-full lg:flex-1 min-w-0">
-          <UploadZone isLoggedIn={isLoggedIn} isPremium={isPremium} />
+          <UploadZoneDynamic isLoggedIn={isLoggedIn} isPremium={isPremium} />
         </div>
         <div className="w-full lg:w-72 shrink-0">
           <PlanSidebar

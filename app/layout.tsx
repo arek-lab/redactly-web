@@ -51,6 +51,7 @@ export default function RootLayout({
     <html
       lang="pl"
       className={`${montserrat.variable} ${inter.variable}`}
+      data-scroll-behavior="smooth"
     >
       <body>
         <SessionBroadcast />
