@@ -70,7 +70,8 @@ export default async function DashboardPage() {
           Konto
         </p>
         <h1 className="text-[30px] font-[650] tracking-[-0.8px] text-text-primary">
-          Cześć, {greeting}
+          <span className="block">Cześć,</span>
+          <span className="block truncate text-[24px] sm:text-[30px]">{greeting}</span>
         </h1>
         {lastLoginDate && (
           <p className="text-[13px] text-text-muted mt-1">
