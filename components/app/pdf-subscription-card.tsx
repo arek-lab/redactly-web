@@ -52,9 +52,10 @@ function QuotaBar({ used, total }: { used: number; total: number }) {
 interface Props {
   sub: Subscription
   hasCustomer: boolean
+  walletBalance?: number
 }
 
-export function PdfSubscriptionCard({ sub, hasCustomer }: Props) {
+export function PdfSubscriptionCard({ sub, hasCustomer, walletBalance = 0 }: Props) {
   const isFree = sub.tier === 'free'
   const isPayg = sub.tier === 'payg'
   const isSub = sub.tier === 'sub'
@@ -83,15 +84,18 @@ export function PdfSubscriptionCard({ sub, hasCustomer }: Props) {
 
       {isSub && sub.quota_total !== null && (
         <div className="mb-4">
+          <p className="text-[13px] text-text-secondary mb-1">
+            Wykorzystano w tym miesiącu
+          </p>
           <QuotaBar used={sub.quota_used} total={sub.quota_total} />
         </div>
       )}
 
-      {isPayg && sub.quota_total !== null && (
+      {isPayg && (
         <div className="mb-4">
           <p className="text-[13px] text-text-secondary mb-0.5">Dostępne strony</p>
           <p className="font-semibold text-text-primary">
-            {sub.quota_total - sub.quota_used}
+            {walletBalance.toLocaleString('pl-PL')}
           </p>
         </div>
       )}

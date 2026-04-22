@@ -63,28 +63,34 @@ export async function POST(request: Request) {
 
   try {
     const session = await getStripe().checkout.sessions.create({
-      mode: 'payment',                  // jednorazowa płatność, nie subskrypcja
-      currency: 'pln',
-      line_items: [
-        {
-          price_data: {
-            currency:     'pln',
-            unit_amount:  amountGrosze,  // dynamiczna kwota od usera
-            product_data: {
-              name:        `Doładowanie PAYG — ${pages} stron`,
-              description: `${pricePerPageGrosze / 100} zł / strona`,
-            },
-          },
-          quantity: 1,
+  mode: 'payment',
+  currency: 'pln',
+  line_items: [
+    {
+      price_data: {
+        currency:     'pln',
+        unit_amount:  amountGrosze,
+        product_data: {
+          name:        `Doładowanie PAYG — ${pages} stron`,
+          description: `${pricePerPageGrosze / 100} zł / strona`,
         },
-      ],
-      metadata: {
-        userId: user.id,
-        pages:  pages.toString(),       // webhook odczyta tę wartość
       },
-      success_url: successUrl,
-      cancel_url:  cancelUrl,
-    })
+      quantity: 1,
+    },
+  ],
+  metadata: {
+    userId: user.id,
+    pages:  pages.toString(),
+  },
+  payment_intent_data: {
+    metadata: {
+      userId: user.id,
+      pages:  pages.toString(),
+    },
+  },
+  success_url: successUrl,
+  cancel_url:  cancelUrl,
+})
 
     return NextResponse.json({ url: session.url })
   } catch (err) {

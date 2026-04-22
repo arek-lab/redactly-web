@@ -92,7 +92,11 @@ export default async function DashboardPage() {
             />
           )}
           {pdfSub && (
-            <PdfSubscriptionCard sub={pdfSub} hasCustomer={hasCustomer} />
+            <PdfSubscriptionCard
+              sub={pdfSub}
+              hasCustomer={hasCustomer}
+              walletBalance={walletBalance}
+            />
           )}
         </div>
       </section>
