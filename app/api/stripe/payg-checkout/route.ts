@@ -15,11 +15,13 @@ import { createServiceClient } from '@/lib/supabase/service'
 
 export async function POST(request: Request) {
   // Parsowanie body
-  let amountZl: number
+  let amountZl: number, successUrl: string, cancelUrl: string
   try {
-    const body = await request.json() as { amountZl?: unknown }
-    amountZl = Number(body.amountZl)
-    if (!isFinite(amountZl)) throw new Error()
+    const body = await request.json() as { amountZl?: unknown; successUrl?: unknown; cancelUrl?: unknown }
+    amountZl   = Number(body.amountZl)
+    successUrl = typeof body.successUrl === 'string' ? body.successUrl : ''
+    cancelUrl  = typeof body.cancelUrl  === 'string' ? body.cancelUrl  : ''
+    if (!isFinite(amountZl) || !successUrl || !cancelUrl) throw new Error()
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
@@ -30,11 +32,6 @@ export async function POST(request: Request) {
 
   if (!pricePerPageGrosze || !minAmountGrosze) {
     return NextResponse.json({ error: 'PAYG pricing not configured' }, { status: 500 })
-  }
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL
-  if (!appUrl) {
-    return NextResponse.json({ error: 'App URL not configured' }, { status: 500 })
   }
 
   const amountGrosze = Math.round(amountZl * 100)
@@ -85,8 +82,8 @@ export async function POST(request: Request) {
         userId: user.id,
         pages:  pages.toString(),       // webhook odczyta tę wartość
       },
-      success_url: `${appUrl}/dashboard?payg=success`,
-      cancel_url:  `${appUrl}/dashboard?payg=cancelled`,
+      success_url: successUrl,
+      cancel_url:  cancelUrl,
     })
 
     return NextResponse.json({ url: session.url })

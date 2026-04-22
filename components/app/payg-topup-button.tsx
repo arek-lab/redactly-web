@@ -38,7 +38,11 @@ export function PaygTopupButton({ pricePerPageGrosze, minAmountZl }: Props) {
           'Content-Type':  'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ amountZl }),
+        body: JSON.stringify({
+          amountZl,
+          successUrl: `${window.location.origin}/dashboard?payg=success`,
+          cancelUrl:  `${window.location.origin}/dashboard?payg=cancelled`,
+        }),
       })
 
       let data: { url?: string; error?: string } = {}
