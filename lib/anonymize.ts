@@ -64,21 +64,28 @@ export async function pollJob(
   return res.json()
 }
 
-/** Pobierz gotowy zanonimizowany PDF. */
-export async function fetchResultPdf(jobId: string, token: string): Promise<Blob> {
+/** Pobierz gotowy zanonimizowany PDF wraz z liczbą zanonimizowanych spanów. */
+export async function fetchResultPdf(
+  jobId: string,
+  token: string
+): Promise<{ blob: Blob; spanCount: number | null }> {
   const res = await apiFetch(`/jobs/${jobId}/result`, token)
-  return res.blob()
+  const raw = res.headers.get('X-Anonymized-Span-Count')
+  const parsed = raw !== null ? parseInt(raw, 10) : null
+  const spanCount = parsed !== null && Number.isFinite(parsed) ? parsed : null
+  const blob = await res.blob()
+  return { blob, spanCount }
 }
 
 /**
  * Wyślij plik PDF i czekaj na wynik (polling co intervalMs ms).
- * Zwraca Blob z zanonimizowanym PDF.
+ * Zwraca Blob z zanonimizowanym PDF oraz liczbę zanonimizowanych spanów.
  */
 export async function anonymizeFile(
   file: File,
   token: string,
   options: { intervalMs?: number; timeoutMs?: number } = {}
-): Promise<Blob> {
+): Promise<{ blob: Blob; spanCount: number | null }> {
   const { intervalMs = 1500, timeoutMs = 30_000 } = options
 
   const jobId = await submitFile(file, token)

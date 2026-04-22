@@ -17,7 +17,7 @@ import {
 type ProcessorState =
   | { status: 'idle' }
   | { status: 'processing'; stage: 0 | 1 | 2; pageProgress: { current: number; total: number } }
-  | { status: 'done'; downloadUrl: string; downloadName: string; summary: PiiSummary; noMatches: boolean; isPremium?: boolean }
+  | { status: 'done'; downloadUrl: string; downloadName: string; summary: PiiSummary; noMatches: boolean; isPremium?: boolean; spanCount?: number | null }
   | { status: 'error'; message: string }
 
 const MAX_SIZE = 10 * 1024 * 1024
@@ -64,7 +64,7 @@ export function usePdfProcessor(): {
       setState({ status: 'processing', stage: 1, pageProgress: { current: 0, total: 1 } })
 
       const token = await getAccessToken()
-      const blob = await anonymizeFile(file, token)
+      const { blob, spanCount } = await anonymizeFile(file, token)
 
       if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current)
       const downloadUrl = URL.createObjectURL(blob)
@@ -79,6 +79,7 @@ export function usePdfProcessor(): {
         summary: { PESEL: 0, KARTA: 0, IBAN: 0 },
         noMatches: false,
         isPremium: true,
+        spanCount,
       })
     } catch (err) {
       const message =

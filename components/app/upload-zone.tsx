@@ -188,23 +188,34 @@ export function UploadZone({ isLoggedIn, isPremium }: UploadZoneProps) {
             <p className="text-text-primary font-semibold text-lg">Anonimizacja zakończona</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            {(
-              [
-                { label: 'PESEL', count: state.summary.PESEL },
-                { label: 'Karta płatnicza', count: state.summary.KARTA },
-                { label: 'IBAN', count: state.summary.IBAN },
-              ] as const
-            ).map(({ label, count }) => (
-              <div
-                key={label}
-                className="rounded-[8px] border border-border-soft bg-bg-surface px-3 py-4 text-center"
-              >
-                <p className="text-2xl font-semibold text-text-primary">{count}</p>
-                <p className="text-xs text-text-muted mt-1">{label}</p>
+          {state.isPremium ? (
+            <div className="flex justify-center">
+              <div className="rounded-[8px] border border-border-soft bg-bg-surface px-8 py-4 text-center">
+                <p className="text-2xl font-semibold text-text-primary">
+                  {state.spanCount ?? '—'}
+                </p>
+                <p className="text-xs text-text-muted mt-1">Zanonimizowane dane</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {(
+                [
+                  { label: 'PESEL', count: state.summary.PESEL },
+                  { label: 'Karta płatnicza', count: state.summary.KARTA },
+                  { label: 'IBAN', count: state.summary.IBAN },
+                ] as const
+              ).map(({ label, count }) => (
+                <div
+                  key={label}
+                  className="rounded-[8px] border border-border-soft bg-bg-surface px-3 py-4 text-center"
+                >
+                  <p className="text-2xl font-semibold text-text-primary">{count}</p>
+                  <p className="text-xs text-text-muted mt-1">{label}</p>
+                </div>
+              ))}
+            </div>
+          )}
 
           {!isPremium && (
             <div className="rounded-[8px] border border-border-soft bg-bg-surface px-4 py-3 text-sm text-text-secondary">
