@@ -13,7 +13,7 @@ export function getStripe(): Stripe {
 
 export function getPriceTierMap(): Record<
   string,
-  { product: 'extension' | 'pdf'; tier: string; quota?: number }
+  { product: 'extension' | 'pdf_api'; tier: string; quota?: number }
 > {
   return {
     [process.env.STRIPE_PRICE_EXTENSION_PREMIUM!]: {
@@ -21,17 +21,17 @@ export function getPriceTierMap(): Record<
       tier: 'premium',
     },
     [process.env.STRIPE_PRICE_PDF_SUB_STARTER!]: {
-      product: 'pdf' as const,
+      product: 'pdf_api' as const,
       tier: 'sub',
       quota: 100,
     },
     [process.env.STRIPE_PRICE_PDF_SUB_BUSINESS!]: {
-      product: 'pdf' as const,
+      product: 'pdf_api' as const,
       tier: 'sub',
       quota: 500,
     },
     [process.env.STRIPE_PRICE_PDF_SUB_PRO!]: {
-      product: 'pdf' as const,
+      product: 'pdf_api' as const,
       tier: 'sub',
       quota: 1500,
     },

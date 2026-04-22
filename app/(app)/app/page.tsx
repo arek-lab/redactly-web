@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { PlanSidebar } from '@/components/app/plan-sidebar'
+import { PaygWalletCard } from '@/components/app/payg-wallet-card'
 import { UploadZoneDynamic } from '@/components/app/upload-zone-dynamic'
 import type { Subscription } from '@/types/database'
 
@@ -9,21 +10,31 @@ export default async function AppPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  let pdfSub: Subscription | null = null
+  let pdfSub:        Subscription | null = null
+  let walletBalance: number              = 0
 
   if (user) {
-    const { data } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('product', 'pdf')
-      .single()
-    pdfSub = data
+    const [{ data: sub }, { data: wallet }] = await Promise.all([
+      supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('product', 'pdf_api')
+        .single(),
+      supabase
+        .from('page_wallets')
+        .select('balance')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+    ])
+    pdfSub        = sub
+    walletBalance = wallet?.balance ?? 0
   }
 
-  const isLoggedIn = !!user
-  const isPremium =
-    pdfSub !== null && pdfSub.status === 'active' && pdfSub.tier !== 'free'
+  const isLoggedIn         = !!user
+  const isPremium          = pdfSub !== null && pdfSub.status === 'active' && pdfSub.tier !== 'free'
+  const pricePerPageGrosze = parseInt(process.env.PAYG_PRICE_PER_PAGE_GROSZ ?? '10')
+  const minAmountZl        = Math.ceil(parseInt(process.env.PAYG_MIN_AMOUNT_GROSZ ?? '1000') / 100)
 
   return (
     <div className="mx-auto max-w-[920px] px-5 py-16">
@@ -39,18 +50,34 @@ export default async function AppPage() {
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
-        <div className="w-full lg:flex-1 min-w-0">
-          <UploadZoneDynamic isLoggedIn={isLoggedIn} isPremium={isPremium} />
+      {/* Upload zone — pełna szerokość */}
+      <div className="mb-6">
+        <UploadZoneDynamic isLoggedIn={isLoggedIn} isPremium={isPremium} />
+      </div>
+
+      {/* Karty informacyjne — responsywne */}
+      {isLoggedIn ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <PlanSidebar
+            isLoggedIn={isLoggedIn}
+            isPremium={isPremium}
+            pdfSub={pdfSub}
+          />
+          <PaygWalletCard
+            balance={walletBalance}
+            pricePerPageGrosze={pricePerPageGrosze}
+            minAmountZl={minAmountZl}
+          />
         </div>
-        <div className="w-full lg:w-72 shrink-0">
+      ) : (
+        <div className="max-w-sm">
           <PlanSidebar
             isLoggedIn={isLoggedIn}
             isPremium={isPremium}
             pdfSub={pdfSub}
           />
         </div>
-      </div>
+      )}
     </div>
   )
 }

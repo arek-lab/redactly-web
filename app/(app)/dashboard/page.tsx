@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CheckoutSuccess } from '@/components/app/checkout-success'
 import { ExtensionSubscriptionCard } from '@/components/app/extension-subscription-card'
 import { PdfSubscriptionCard } from '@/components/app/pdf-subscription-card'
+import { PaygWalletCard } from '@/components/app/payg-wallet-card'
 import { FileHistoryTable } from '@/components/app/file-history-table'
 import type { Subscription, PdfJob } from '@/types/database'
 
@@ -15,7 +16,7 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const [{ data: subs }, { data: jobs }] = await Promise.all([
+  const [{ data: subs }, { data: jobs }, { data: wallet }] = await Promise.all([
     supabase
       .from('subscriptions')
       .select('*')
@@ -26,13 +27,21 @@ export default async function DashboardPage() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(20),
+    supabase
+      .from('page_wallets')
+      .select('balance')
+      .eq('user_id', user.id)
+      .maybeSingle(),
   ])
 
   const extensionSub =
     (subs as Subscription[] | null)?.find((s) => s.product === 'extension') ?? null
   const pdfSub =
-    (subs as Subscription[] | null)?.find((s) => s.product === 'pdf') ?? null
-  const hasCustomer = (subs ?? []).some((s) => s.stripe_customer_id !== null)
+    (subs as Subscription[] | null)?.find((s) => s.product === 'pdf_api') ?? null
+  const hasCustomer        = (subs ?? []).some((s) => s.stripe_customer_id !== null)
+  const walletBalance      = wallet?.balance ?? 0
+  const pricePerPageGrosze = parseInt(process.env.PAYG_PRICE_PER_PAGE_GROSZ ?? '10')
+  const minAmountZl        = Math.ceil(parseInt(process.env.PAYG_MIN_AMOUNT_GROSZ ?? '1000') / 100)
 
   const displayName = user.user_metadata?.full_name as string | undefined
   const greeting = displayName ?? user.email ?? 'uzytkownik'
@@ -83,6 +92,20 @@ export default async function DashboardPage() {
           {pdfSub && (
             <PdfSubscriptionCard sub={pdfSub} hasCustomer={hasCustomer} />
           )}
+        </div>
+      </section>
+
+      {/* PAYG wallet */}
+      <section className="mb-8">
+        <h2 className="text-[15px] font-semibold text-text-primary mb-4">
+          Doładowania
+        </h2>
+        <div className="sm:max-w-[440px]">
+          <PaygWalletCard
+            balance={walletBalance}
+            pricePerPageGrosze={pricePerPageGrosze}
+            minAmountZl={minAmountZl}
+          />
         </div>
       </section>
 

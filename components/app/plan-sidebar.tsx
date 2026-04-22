@@ -1,15 +1,11 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import type { Subscription } from '@/types/database'
-import { cn } from '@/lib/utils'
 
 interface PlanSidebarProps {
   isLoggedIn: boolean
-  isPremium: boolean
-  pdfSub: Subscription | null
+  isPremium:  boolean
+  pdfSub:     Subscription | null
 }
 
 function CheckIcon() {
@@ -36,10 +32,10 @@ function DashIcon() {
 
 function ComparisonTable() {
   const rows: [string, boolean, boolean][] = [
-    ['PESEL, IBAN, nr karty', true, true],
-    ['Imiona i nazwiska', false, true],
-    ['Lokalizacje, adresy', false, true],
-    ['Kontekstowy model NLP', false, true],
+    ['PESEL, IBAN, nr karty',   true,  true],
+    ['Imiona i nazwiska',       false, true],
+    ['Lokalizacje, adresy',     false, true],
+    ['Kontekstowy model NLP',   false, true],
   ]
 
   return (
@@ -82,21 +78,17 @@ function ComparisonTable() {
   )
 }
 
-function LoggedInInfo({
-  pdfSub,
-}: {
-  pdfSub: Subscription | null
-}) {
-  const tier = pdfSub?.tier ?? 'free'
-  const isActive = pdfSub?.status === 'active'
+function LoggedInInfo({ pdfSub }: { pdfSub: Subscription | null }) {
+  const tier       = pdfSub?.tier       ?? 'free'
+  const isActive   = pdfSub?.status     === 'active'
   const quotaTotal = pdfSub?.quota_total ?? null
-  const quotaUsed = pdfSub?.quota_used ?? 0
+  const quotaUsed  = pdfSub?.quota_used  ?? 0
 
   const TIER_LABELS: Record<string, string> = {
-    free: 'Free',
-    premium: 'Premium',
-    payg: 'Pay as you go',
-    sub: 'Subskrypcja',
+    free:       'Free',
+    premium:    'Premium',
+    payg:       'Pay as you go',
+    sub:        'Subskrypcja',
     enterprise: 'Enterprise',
   }
 
@@ -151,54 +143,10 @@ function LoggedInInfo({
   )
 }
 
-export function PlanSidebar({ isLoggedIn, isPremium, pdfSub }: PlanSidebarProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
-
-  const title = isLoggedIn ? 'Twój plan' : 'Porównanie planów'
-
+export function PlanSidebar({ isLoggedIn, isPremium: _isPremium, pdfSub }: PlanSidebarProps) {
   return (
-    <div className="rounded-[12px] border border-border-soft bg-bg-white overflow-hidden">
-      {/* Mobile toggle */}
-      <button
-        type="button"
-        onClick={() => setMobileOpen((o) => !o)}
-        aria-expanded={mobileOpen}
-        aria-controls="plan-sidebar-content"
-        className="lg:hidden w-full flex items-center justify-between px-5 py-4 text-sm font-medium text-text-primary"
-      >
-        <span>{title}</span>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          className={cn('transition-transform duration-200', mobileOpen && 'rotate-180')}
-        >
-          <path
-            d="M4 6L8 10L12 6"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-
-      {/* Divider on mobile when open */}
-      <div
-        id="plan-sidebar-content"
-        className={cn(
-          'px-5 pb-5',
-          'lg:block lg:pt-5',
-          mobileOpen ? 'block border-t border-border-soft pt-4' : 'hidden',
-        )}
-      >
-        {!isLoggedIn ? (
-          <ComparisonTable />
-        ) : (
-          <LoggedInInfo pdfSub={pdfSub} />
-        )}
-      </div>
+    <div className="rounded-[12px] border border-border-soft bg-bg-white p-5">
+      {!isLoggedIn ? <ComparisonTable /> : <LoggedInInfo pdfSub={pdfSub} />}
     </div>
   )
 }

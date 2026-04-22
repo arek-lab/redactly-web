@@ -7,7 +7,7 @@ import { ManageButton } from '@/components/app/manage-button'
 
 const PRODUCT_LABELS: Record<SubscriptionProduct, string> = {
   extension: 'Wtyczka Chrome',
-  pdf: 'Aplikacja PDF',
+  pdf_api: 'Aplikacja PDF',
 }
 
 const TIER_LABELS: Record<string, string> = {
@@ -95,14 +95,14 @@ function SubCard({
         <p className="font-semibold text-text-primary">{TIER_LABELS[sub.tier] ?? sub.tier}</p>
       </div>
 
-      {sub.product === 'pdf' && sub.quota_total !== null && (
+      {sub.product === 'pdf_api' && sub.quota_total !== null && (
         <div>
           <p className="text-[13px] text-text-secondary">Quota miesięczna</p>
           <QuotaBar used={sub.quota_used} total={sub.quota_total} />
         </div>
       )}
 
-      {sub.product === 'pdf' && sub.tier === 'payg' && sub.quota_total !== null && (
+      {sub.product === 'pdf_api' && sub.tier === 'payg' && sub.quota_total !== null && (
         <div>
           <p className="text-[13px] text-text-secondary">Dostępne strony</p>
           <p className="font-semibold text-text-primary">
