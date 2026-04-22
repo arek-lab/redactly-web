@@ -17,7 +17,7 @@ export interface UploadZoneProps {
 }
 
 export function UploadZone({ isLoggedIn, isPremium }: UploadZoneProps) {
-  const { state, processFile, reset } = usePdfProcessor()
+  const { state, processFile, processFilePremium, reset } = usePdfProcessor()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const dragCounter = useRef(0)
@@ -47,9 +47,11 @@ export function UploadZone({ isLoggedIn, isPremium }: UploadZoneProps) {
   }
 
   function handleFile(file: File) {
-    // TODO: isPremium — wywołaj processFilePremium(file) zamiast processFile(file)
-    // processFilePremium: POST /api/pdf/redact z FormData, odbierz blob, utwórz downloadUrl
-    processFile(file)
+    if (isPremium) {
+      processFilePremium(file)
+    } else {
+      processFile(file)
+    }
   }
 
   function getProgress(stage: 0 | 1 | 2, current: number, total: number): number {
@@ -204,10 +206,12 @@ export function UploadZone({ isLoggedIn, isPremium }: UploadZoneProps) {
             ))}
           </div>
 
-          <div className="rounded-[8px] border border-border-soft bg-bg-surface px-4 py-3 text-sm text-text-secondary">
-            Wersja demonstracyjna — tekst zasłonięty, nie usunięty ze strumienia PDF.{' '}
-            Dla pełnej zgodności z RODO użyj wersji Premium.
-          </div>
+          {!isPremium && (
+            <div className="rounded-[8px] border border-border-soft bg-bg-surface px-4 py-3 text-sm text-text-secondary">
+              Wersja demonstracyjna — tekst zasłonięty, nie usunięty ze strumienia PDF.{' '}
+              Dla pełnej zgodności z RODO użyj wersji Premium.
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3">
             <a
