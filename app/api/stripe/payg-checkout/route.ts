@@ -14,7 +14,15 @@ import { createServiceClient } from '@/lib/supabase/service'
 // ---------------------------------------------------------------------------
 
 export async function POST(request: Request) {
-  const { amountZl } = await request.json()
+  // Parsowanie body
+  let amountZl: number
+  try {
+    const body = await request.json() as { amountZl?: unknown }
+    amountZl = Number(body.amountZl)
+    if (!isFinite(amountZl)) throw new Error()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  }
 
   // Walidacja kwoty
   const pricePerPageGrosze = parseInt(process.env.PAYG_PRICE_PER_PAGE_GROSZ!)
@@ -22,6 +30,11 @@ export async function POST(request: Request) {
 
   if (!pricePerPageGrosze || !minAmountGrosze) {
     return NextResponse.json({ error: 'PAYG pricing not configured' }, { status: 500 })
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (!appUrl) {
+    return NextResponse.json({ error: 'App URL not configured' }, { status: 500 })
   }
 
   const amountGrosze = Math.round(amountZl * 100)
@@ -51,29 +64,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const session = await getStripe().checkout.sessions.create({
-    mode: 'payment',                  // jednorazowa płatność, nie subskrypcja
-    currency: 'pln',
-    line_items: [
-      {
-        price_data: {
-          currency:     'pln',
-          unit_amount:  amountGrosze,  // dynamiczna kwota od usera
-          product_data: {
-            name:        `Doładowanie PAYG — ${pages} stron`,
-            description: `${pricePerPageGrosze / 100} zł / strona`,
+  try {
+    const session = await getStripe().checkout.sessions.create({
+      mode: 'payment',                  // jednorazowa płatność, nie subskrypcja
+      currency: 'pln',
+      line_items: [
+        {
+          price_data: {
+            currency:     'pln',
+            unit_amount:  amountGrosze,  // dynamiczna kwota od usera
+            product_data: {
+              name:        `Doładowanie PAYG — ${pages} stron`,
+              description: `${pricePerPageGrosze / 100} zł / strona`,
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      metadata: {
+        userId: user.id,
+        pages:  pages.toString(),       // webhook odczyta tę wartość
       },
-    ],
-    metadata: {
-      userId: user.id,
-      pages:  pages.toString(),       // webhook odczyta tę wartość
-    },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payg=success`,
-    cancel_url:  `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payg=cancelled`,
-  })
+      success_url: `${appUrl}/dashboard?payg=success`,
+      cancel_url:  `${appUrl}/dashboard?payg=cancelled`,
+    })
 
-  return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: session.url })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Stripe error'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }

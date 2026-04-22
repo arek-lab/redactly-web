@@ -32,7 +32,7 @@ export function PaygTopupButton({ pricePerPageGrosze, minAmountZl }: Props) {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) throw new Error('Brak aktywnej sesji')
 
-      const res  = await fetch('/api/stripe/payg-checkout', {
+      const res = await fetch('/api/stripe/payg-checkout', {
         method:  'POST',
         headers: {
           'Content-Type':  'application/json',
@@ -40,7 +40,14 @@ export function PaygTopupButton({ pricePerPageGrosze, minAmountZl }: Props) {
         },
         body: JSON.stringify({ amountZl }),
       })
-      const data = await res.json() as { url?: string; error?: string }
+
+      let data: { url?: string; error?: string } = {}
+      try {
+        data = await res.json() as typeof data
+      } catch {
+        throw new Error(`Błąd serwera (HTTP ${res.status})`)
+      }
+
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
       if (data.url) window.location.href = data.url
     } catch (err) {
