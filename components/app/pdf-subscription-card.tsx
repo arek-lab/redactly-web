@@ -60,6 +60,7 @@ export function PdfSubscriptionCard({ sub, hasCustomer, walletBalance = 0 }: Pro
   const isPayg = sub.tier === 'payg'
   const isSub = sub.tier === 'sub'
   const isActive = sub.status === 'active'
+  const isExhausted = isSub && isActive && sub.quota_total !== null && sub.quota_used >= sub.quota_total
 
   const priceIdUpgrade = process.env.STRIPE_PRICE_PDF_SUB_STARTER ?? ''
   const priceIdPayg = process.env.STRIPE_PRICE_PDF_PAYG ?? ''
@@ -125,7 +126,21 @@ export function PdfSubscriptionCard({ sub, hasCustomer, walletBalance = 0 }: Pro
       )}
 
       {isSub && hasCustomer && (
-        <ManageButton />
+        <>
+          {isExhausted && (
+            <div className="rounded-[8px] border border-border-mid bg-bg-surface-2 p-3 mb-3">
+              <p className="text-[13px] font-medium text-text-primary mb-1">
+                Limit stron wyczerpany
+              </p>
+              <p className="text-[12px] text-text-secondary">
+                Nie kupuj nowej subskrypcji — masz już aktywną na ten okres.
+                Potrzebujesz więcej stron teraz? Doładuj portfel PAYG.
+                Chcesz zmienić plan na wyższy? Skorzystaj z zarządzania subskrypcją.
+              </p>
+            </div>
+          )}
+          <ManageButton />
+        </>
       )}
     </Card>
   )

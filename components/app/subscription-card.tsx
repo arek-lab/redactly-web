@@ -71,6 +71,7 @@ function SubCard({
 }) {
   const isActive = sub.status === 'active'
   const isFree = sub.tier === 'free'
+  const isExhausted = sub.product === 'pdf_api' && isActive && sub.quota_total !== null && sub.quota_used >= sub.quota_total
 
   function upgradePrice() {
     if (sub.product === 'extension') return upgradePrices.extensionPremium
@@ -120,6 +121,19 @@ function SubCard({
             year: 'numeric',
           })}
         </p>
+      )}
+
+      {isExhausted && (
+        <div className="rounded-[8px] border border-border-mid bg-bg-surface-2 p-3">
+          <p className="text-[13px] font-medium text-text-primary mb-1">
+            Limit stron wyczerpany
+          </p>
+          <p className="text-[12px] text-text-secondary">
+            Nie kupuj nowej subskrypcji — masz już aktywną na ten okres.
+            Potrzebujesz więcej stron teraz? Doładuj portfel PAYG.
+            Chcesz zmienić plan na wyższy? Skorzystaj z zarządzania subskrypcją.
+          </p>
+        </div>
       )}
 
       <div className="flex gap-2 mt-1">

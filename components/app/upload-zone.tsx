@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { usePdfProcessor } from '@/hooks/usePdfProcessor'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -21,6 +22,13 @@ export function UploadZone({ isLoggedIn, isPremium }: UploadZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const dragCounter = useRef(0)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (state.status === 'done' && state.isPremium) {
+      router.refresh()
+    }
+  }, [state.status])
 
   function onDragEnter(e: React.DragEvent) {
     e.preventDefault()

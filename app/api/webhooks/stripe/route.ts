@@ -121,9 +121,7 @@ export async function POST(request: Request) {
         const periodStart = new Date(item.current_period_start * 1000).toISOString()
         const periodEnd   = new Date(item.current_period_end   * 1000).toISOString()
 
-        await supabase
-          .from('subscriptions')
-          .update({
+        const updatePayload = {
             tier:                   mapping.tier as SubscriptionTier,
             status:                 subscription.status as SubscriptionStatus,
             expires_at:             periodEnd,
@@ -133,9 +131,21 @@ export async function POST(request: Request) {
             quota_total:            mapping.quota ?? null,
             quota_used:             0,
             updated_at:             new Date().toISOString(),
-          })
+          }
+
+        const baseQuery = supabase
+          .from('subscriptions')
+          .update(updatePayload)
           .eq('user_id', userId)
           .eq('product', mapping.product)
+
+        // subscription.updated: dopasuj też po stripe_subscription_id żeby zdarzenia
+        // dla starej (zastąpionej) subskrypcji nie nadpisały danych nowej.
+        // subscription.created: dopasuj tylko po user_id+product — ustawia nową sub_id w wierszu.
+        const { error: subUpsertError } = await (event.type === 'customer.subscription.updated'
+          ? baseQuery.eq('stripe_subscription_id', subscription.id)
+          : baseQuery)
+        if (subUpsertError) throw new Error(subUpsertError.message)
 
         break
       }
@@ -157,7 +167,10 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'User not found' }, { status: 400 })
         }
 
-        await supabase
+        // Dopasuj po stripe_subscription_id — chroni przed sytuacją gdy user kupił
+        // nową subskrypcję (sub_new), a Stripe anuluje starą (sub_old): event deleted
+        // dla sub_old nie powinien nadpisywać aktywnych danych sub_new.
+        const { error: subDeleteError } = await supabase
           .from('subscriptions')
           .update({
             tier:        'free',
@@ -169,6 +182,8 @@ export async function POST(request: Request) {
           })
           .eq('user_id', userId)
           .eq('product', mapping.product)
+          .eq('stripe_subscription_id', subscription.id)
+        if (subDeleteError) throw new Error(subDeleteError.message)
 
         break
       }
@@ -191,7 +206,7 @@ export async function POST(request: Request) {
         const periodStart = new Date(line.period.start * 1000).toISOString()
         const periodEnd   = new Date(line.period.end   * 1000).toISOString()
 
-        await supabase
+        const { error: renewalError } = await supabase
           .from('subscriptions')
           .update({
             quota_used:   0,
@@ -202,6 +217,7 @@ export async function POST(request: Request) {
             updated_at:   new Date().toISOString(),
           })
           .eq('stripe_subscription_id', stripeSubId)
+        if (renewalError) throw new Error(renewalError.message)
 
         break
       }
@@ -217,13 +233,14 @@ export async function POST(request: Request) {
 
         if (!stripeSubId) break
 
-        await supabase
+        const { error: pastDueError } = await supabase
           .from('subscriptions')
           .update({
             status:     'past_due',
             updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', stripeSubId)
+        if (pastDueError) throw new Error(pastDueError.message)
 
         break
       }

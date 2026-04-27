@@ -32,7 +32,7 @@ export default async function AppPage() {
   }
 
   const isLoggedIn         = !!user
-  const isPremium          = pdfSub !== null && pdfSub.status === 'active' && pdfSub.tier !== 'free'
+  const isPremium          = (pdfSub !== null && pdfSub.status === 'active' && pdfSub.tier !== 'free') || walletBalance > 0
   const pricePerPageGrosze = parseInt(process.env.PAYG_PRICE_PER_PAGE_GROSZ ?? '10')
   const minAmountZl        = Math.ceil(parseInt(process.env.PAYG_MIN_AMOUNT_GROSZ ?? '1000') / 100)
 

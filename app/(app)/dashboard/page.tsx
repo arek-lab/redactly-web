@@ -28,7 +28,7 @@ export default async function DashboardPage() {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(20),
+      .limit(500),
     supabase
       .from('page_wallets')
       .select('balance')

@@ -99,7 +99,7 @@ export function usePdfProcessor(): {
       return
     }
     if (file.size > MAX_SIZE) {
-      setState({ status: 'error', message: `Plik jest za duży (${(file.size / 1024 / 1024).toFixed(1)} MB). Maksymalny rozmiar to 10 MB.` })
+      setState({ status: 'error', message: `Plik jest za duży (${(file.size / 1024 / 1024 ).toFixed(1)} MB). Maksymalny rozmiar to 10 MB.` })
       return
     }
 
