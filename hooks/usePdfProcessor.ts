@@ -7,25 +7,43 @@ import {
   redactPdf,
   summarize,
 } from '@/lib/pdf'
-import type { PiiMatch, PiiSummary } from '@/lib/pdf'
+import type { PiiSummary } from '@/lib/pdf'
 import {
   anonymizeFile,
   getAccessToken,
   AnonymizeError,
 } from '@/lib/anonymize'
+import type { RedactMode } from '@/lib/anonymize'
 
 type ProcessorState =
   | { status: 'idle' }
-  | { status: 'processing'; stage: 0 | 1 | 2; pageProgress: { current: number; total: number } }
-  | { status: 'done'; downloadUrl: string; downloadName: string; summary: PiiSummary; noMatches: boolean; isPremium?: boolean; spanCount?: number | null }
+  | {
+      status: 'processing'
+      stage: 0 | 1 | 2
+      pageProgress: { current: number; total: number }
+      premiumPhase?: 'pending' | 'processing'
+      estimatedWait?: number | null
+      pageCount?: number | null
+    }
+  | {
+      status: 'done'
+      downloadUrl: string
+      downloadName: string
+      summary: PiiSummary
+      noMatches: boolean
+      isPremium?: boolean
+      rodoCompliant?: boolean
+      entityCounts?: Record<string, number>
+    }
   | { status: 'error'; message: string }
 
-const MAX_SIZE = 10 * 1024 * 1024
+const MAX_SIZE_FREE    = 10 * 1024 * 1024
+const MAX_SIZE_PREMIUM = 20 * 1024 * 1024
 
 export function usePdfProcessor(): {
   state: ProcessorState
   processFile: (file: File) => Promise<void>
-  processFilePremium: (file: File) => Promise<void>
+  processFilePremium: (file: File, redactMode?: RedactMode) => Promise<void>
   reset: () => void
 } {
   const [state, setState] = useState<ProcessorState>({ status: 'idle' })
@@ -47,44 +65,64 @@ export function usePdfProcessor(): {
     }
   }, [])
 
-  const processFilePremium = useCallback(async (file: File) => {
+  const processFilePremium = useCallback(async (file: File, redactMode: RedactMode = 'dash') => {
     if (file.type !== 'application/pdf') {
       setState({ status: 'error', message: 'Wybierz plik PDF.' })
       return
     }
-    if (file.size > MAX_SIZE) {
+    if (file.size > MAX_SIZE_PREMIUM) {
       setState({
         status: 'error',
-        message: `Plik jest za duży (${(file.size / 1024 / 1024).toFixed(1)} MB). Maksymalny rozmiar to 10 MB.`,
+        message: `Plik jest za duży (${(file.size / 1024 / 1024).toFixed(1)} MB). Maksymalny rozmiar to 20 MB.`,
       })
       return
     }
 
-    try {
-      setState({ status: 'processing', stage: 1, pageProgress: { current: 0, total: 1 } })
+    setState({
+      status: 'processing',
+      stage: 1,
+      pageProgress: { current: 0, total: 1 },
+      premiumPhase: 'pending',
+      estimatedWait: null,
+      pageCount: null,
+    })
 
+    try {
       const token = await getAccessToken()
-      const { blob, spanCount } = await anonymizeFile(file, token)
+      const { blob, summary } = await anonymizeFile(file, token, redactMode, {
+        onProgress: ({ phase, estimatedWaitSeconds, pageCount }) => {
+          setState({
+            status: 'processing',
+            stage: 1,
+            pageProgress: { current: 0, total: 1 },
+            premiumPhase: phase,
+            estimatedWait: estimatedWaitSeconds ?? null,
+            pageCount: pageCount ?? null,
+          })
+        },
+      })
 
       if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current)
       const downloadUrl = URL.createObjectURL(blob)
       objectUrlRef.current = downloadUrl
 
       const baseName = file.name.replace(/\.pdf$/i, '')
+      const noMatches = Object.values(summary.entity_counts).reduce((acc, n) => acc + n, 0) === 0
 
       setState({
         status: 'done',
         downloadUrl,
         downloadName: `${baseName}_zanonimizowany.pdf`,
         summary: { PESEL: 0, KARTA: 0, IBAN: 0 },
-        noMatches: false,
+        noMatches,
         isPremium: true,
-        spanCount,
+        rodoCompliant: summary.rodo_compliant,
+        entityCounts: summary.entity_counts,
       })
     } catch (err) {
       const message =
         err instanceof AnonymizeError
-          ? (err.detail ?? err.message)
+          ? err.message
           : err instanceof Error
             ? err.message
             : 'Nieznany błąd przetwarzania.'
@@ -98,7 +136,7 @@ export function usePdfProcessor(): {
       setState({ status: 'error', message: 'Wybierz plik PDF.' })
       return
     }
-    if (file.size > MAX_SIZE) {
+    if (file.size > MAX_SIZE_FREE) {
       setState({ status: 'error', message: `Plik jest za duży (${(file.size / 1024 / 1024 ).toFixed(1)} MB). Maksymalny rozmiar to 10 MB.` })
       return
     }
@@ -109,13 +147,11 @@ export function usePdfProcessor(): {
       const arrayBuffer = await file.arrayBuffer()
       const bytes = new Uint8Array(arrayBuffer)
 
-      // stage 0 — extract
       const { items, fullText, offsetMap } = await extractTextItems(bytes, {
         onProgress: (current, total) =>
           setState({ status: 'processing', stage: 0, pageProgress: { current, total } }),
       })
 
-      // stage 1 — detect & mask
       setState({ status: 'processing', stage: 1, pageProgress: { current: 0, total: 1 } })
       const { matches, maskedText } = detectAndMask(fullText)
 
@@ -134,7 +170,6 @@ export function usePdfProcessor(): {
         return
       }
 
-      // stage 2 — redact PDF
       setState({ status: 'processing', stage: 2, pageProgress: { current: 0, total: 1 } })
       const redactedBytes = await redactPdf(bytes, matches, items, offsetMap)
 
@@ -146,12 +181,11 @@ export function usePdfProcessor(): {
       objectUrlRef.current = downloadUrl
 
       const baseName = file.name.replace(/\.pdf$/i, '')
-      const downloadName = `${baseName}_zanonimizowany.pdf`
 
       setState({
         status: 'done',
         downloadUrl,
-        downloadName,
+        downloadName: `${baseName}_zanonimizowany.pdf`,
         summary: summarize(matches),
         noMatches: false,
       })

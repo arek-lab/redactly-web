@@ -11,7 +11,7 @@ const cells: TrustCell[] = [
     lines: [
       'Serwery: eu-central-1, Frankfurt',
       'Transfer poza UE: nigdy',
-      'GDPR Art. 44 — spełnione',
+      'GDPR Art. 44 – spełnione',
     ],
   },
   {

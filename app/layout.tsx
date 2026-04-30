@@ -28,12 +28,12 @@ function resolveMetadataBase(): URL {
 
 export const metadata: Metadata = {
   metadataBase: resolveMetadataBase(),
-  title: 'Redactly — Anonimizacja danych osobowych zgodnie z RODO',
+  title: 'Redactly – Anonimizacja danych osobowych zgodnie z RODO',
   description:
-    'Chroń dane osobowe przed wyciekiem do narzędzi AI i SaaS. Redactly anonimizuje tekst w przeglądarce i pliki PDF — lokalnie, bez wysyłania danych na zewnątrz.',
+    'Chroń dane osobowe przed wyciekiem do narzędzi AI i SaaS. Redactly anonimizuje tekst w przeglądarce i pliki PDF – lokalnie, bez wysyłania danych na zewnątrz.',
   keywords: ['RODO', 'anonimizacja', 'dane osobowe', 'wtyczka Chrome', 'PDF'],
   openGraph: {
-    title: 'Redactly — Anonimizacja danych osobowych',
+    title: 'Redactly – Anonimizacja danych osobowych',
     description:
       'Wtyczka Chrome + aplikacja PDF. Chroń dane osobowe w codziennej pracy z AI.',
     locale: 'pl_PL',

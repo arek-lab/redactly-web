@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         currency:     'pln',
         unit_amount:  amountGrosze,
         product_data: {
-          name:        `Doładowanie PAYG — ${pages} stron`,
+          name:        `Doładowanie PAYG – ${pages} stron`,
           description: `${pricePerPageGrosze / 100} zł / strona`,
         },
       },

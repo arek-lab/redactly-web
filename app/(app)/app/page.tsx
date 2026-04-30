@@ -46,7 +46,7 @@ export default async function AppPage() {
           Anonimizacja PDF
         </h1>
         <p className="text-text-secondary mt-2 max-w-[480px]">
-          Wykryj i zastąp dane osobowe w dokumentach PDF — bez zapisywania pliku na serwerze.
+          Wykryj i zastąp dane osobowe w dokumentach PDF – bez zapisywania pliku na serwerze.
         </p>
       </div>
 

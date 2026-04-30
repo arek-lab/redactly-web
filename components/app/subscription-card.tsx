@@ -14,7 +14,7 @@ const TIER_LABELS: Record<string, string> = {
   free: 'Free',
   premium: 'Premium',
   enterprise: 'Enterprise',
-  payg: 'Pay as you go',
+  payg: 'Płać tylko za użycie',
   sub: 'Subskrypcja',
 }
 
@@ -129,7 +129,7 @@ function SubCard({
             Limit stron wyczerpany
           </p>
           <p className="text-[12px] text-text-secondary">
-            Nie kupuj nowej subskrypcji — masz już aktywną na ten okres.
+            Nie kupuj nowej subskrypcji – masz już aktywną na ten okres.
             Potrzebujesz więcej stron teraz? Doładuj portfel PAYG.
             Chcesz zmienić plan na wyższy? Skorzystaj z zarządzania subskrypcją.
           </p>

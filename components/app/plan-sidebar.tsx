@@ -87,7 +87,7 @@ function LoggedInInfo({ pdfSub }: { pdfSub: Subscription | null }) {
   const TIER_LABELS: Record<string, string> = {
     free:       'Free',
     premium:    'Premium',
-    payg:       'Pay as you go',
+    payg:       'Płać tylko za użycie',
     sub:        'Subskrypcja',
     enterprise: 'Enterprise',
   }

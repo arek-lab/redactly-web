@@ -15,7 +15,7 @@ export function PaygWalletCard({ balance, pricePerPageGrosze, minAmountZl }: Pro
           <p className="text-[12px] font-semibold uppercase tracking-[1px] text-text-muted mb-0.5">
             Portfel PAYG
           </p>
-          <p className="font-semibold text-text-primary">Pay as you go</p>
+          <p className="font-semibold text-text-primary">Płać tylko za użycie</p>
         </div>
       </div>
 

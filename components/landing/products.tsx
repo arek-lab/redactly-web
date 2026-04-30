@@ -279,7 +279,7 @@ const extensionPlans: Plan[] = [
       { text: 'Wszystko z Free' },
       { text: 'Lematyzacja polskich imion' },
       { text: 'Bazy geograficzne' },
-      { text: 'Model NLP — detekcja kontekstowa' },
+      { text: 'Model NLP – detekcja kontekstowa' },
     ],
     cta: 'Kup Premium',
     ctaHref: '/register',
@@ -335,8 +335,8 @@ const pdfPlans: Plan[] = [
     ctaHref: '/app',
   },
   {
-    name: 'Pay as you go',
-    price: '0,49 zł',
+    name: 'Płać tylko za użycie',
+    price: '0,10 zł',
     priceNote: 'za stronę',
     features: [
       { text: 'Pełna anonimizacja (NLP)' },
@@ -353,9 +353,9 @@ const pdfPlans: Plan[] = [
     price: 'od 29,99 zł',
     priceNote: '100 str. / mies.',
     features: [
-      { text: 'Starter: 100 str. — 29,99 zł' },
-      { text: 'Business: 500 str. — 99,99 zł' },
-      { text: 'Pro: 1 500 str. — 249,99 zł' },
+      { text: 'Starter: 100 str. – 29,99 zł' },
+      { text: 'Business: 500 str. – 99,99 zł' },
+      { text: 'Pro: 1 500 str. – 249,99 zł' },
     ],
     cta: 'Wybierz plan',
     ctaHref: '/app',
@@ -460,7 +460,7 @@ export function Products() {
           <div>
             <p className="text-text-secondary max-w-[600px]">
               Redactly Extension wykrywa dane osobowe w polach tekstowych bezpośrednio w
-              przeglądarce — zanim trafią do ChatGPT, Gemini, Copilota lub dowolnego
+              przeglądarce – zanim trafią do ChatGPT, Gemini, Copilota lub dowolnego
               innego narzędzia. Działa na każdej stronie, w Shadow DOM.
             </p>
           </div>
@@ -485,7 +485,7 @@ export function Products() {
           <div>
             <p className="text-text-secondary max-w-[600px]">
               Redactly Files przetwarza dokumenty PDF i zwraca zanonimizowaną wersję
-              gotową do udostępnienia. Plan free działa lokalnie w przeglądarce — bez
+              gotową do udostępnienia. Plan free działa lokalnie w przeglądarce – bez
               uploadu, bez rejestracji.
             </p>
           </div>

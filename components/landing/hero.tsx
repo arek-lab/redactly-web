@@ -12,13 +12,11 @@ export function Hero() {
           <Eyebrow>Anonimizacja danych osobowych</Eyebrow>
 
           <h1 className="font-display text-text-primary text-[32px]! md:text-[48px]! tracking-[0.01em]!">
-            Używasz AI w pracy.
-            <br />
-            Dane osobowe nie powinny tam trafiać.
+            Anonimizacja danych osobowych chroni Cię kiedy pracujesz z AI.
           </h1>
 
           <p className="text-text-secondary text-[17px] leading-relaxed max-w-[560px]">
-            Redactly wykrywa i anonimizuje dane osobowe automatycznie — zanim
+            Redactly wykrywa i anonimizuje dane osobowe automatycznie – zanim
             tekst opuści przeglądarkę lub plik trafi do zewnętrznego systemu.
             Działa bez konfiguracji, lokalnie lub w centrum danych w UE.
           </p>

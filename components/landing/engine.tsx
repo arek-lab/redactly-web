@@ -84,19 +84,19 @@ const blocks: EngineBlock[] = [
   {
     title: 'Wzorce i reguły',
     description:
-      'PESEL, IBAN, numery kart płatniczych, adresy email, numery telefonów. Deterministyczne reguły regex — szybkie i pewne dla ustrukturyzowanych danych.',
+      'PESEL, IBAN, numery kart płatniczych, adresy email, numery telefonów. Deterministyczne reguły regex – szybkie i pewne dla ustrukturyzowanych danych.',
     icon: <IconPattern />,
   },
   {
     title: 'Bazy geograficzne i lematyzacja',
     description:
-      'Porównujemy tekst z bazami polskich miejscowości, ulic i regionów. Lematyzacja pozwala wykryć nazwy odmienione lub będące wyrazami pospolitymi — np. "ul. Lipowej" czy "Zielonej Górze".',
+      'Porównujemy tekst z bazami polskich miejscowości, ulic i regionów. Lematyzacja pozwala wykryć nazwy odmienione lub będące wyrazami pospolitymi – np. "ul. Lipowej" czy "Zielonej Górze".',
     icon: <IconGeo />,
   },
   {
     title: 'Model językowy NLP',
     description:
-      'Nowoczesny model rozumie kontekst zdania. "Przelej Janowi 500 zł" — wykrywa "Janowi" jako imię, mimo odmiany przez przypadek.',
+      'Nowoczesny model rozumie kontekst zdania. "Przelej Janowi 500 zł" – wykrywa "Janowi" jako imię, mimo odmiany przez przypadek.',
     icon: <IconNLP />,
   },
 ]

@@ -8,7 +8,7 @@ const TIER_LABELS: Record<SubscriptionTier, string> = {
   free: 'Free',
   premium: 'Premium',
   enterprise: 'Enterprise',
-  payg: 'Pay as you go',
+  payg: 'Płać tylko za użycie',
   sub: 'Subskrypcja',
 }
 
@@ -78,7 +78,7 @@ export function ExtensionSubscriptionCard({ sub, hasCustomer }: Props) {
           </p>
           <CheckoutButton
             priceId={priceId}
-            label="Przejdź na Premium — 29,99 zł/mies."
+            label="Przejdź na Premium – 29,99 zł/mies."
           />
         </div>
       )}
