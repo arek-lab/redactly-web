@@ -12,7 +12,7 @@ export function Hero() {
           <Eyebrow>Anonimizacja danych osobowych</Eyebrow>
 
           <h1 className="font-display text-text-primary text-[32px]! md:text-[48px]! tracking-[0.01em]!">
-            Anonimizacja danych osobowych chroni Cię kiedy pracujesz z AI.
+            Anonimizacja danych osobowych chroni podczas pracy z AI.
           </h1>
 
           <p className="text-text-secondary text-[17px] leading-relaxed max-w-[560px]">
